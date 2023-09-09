@@ -9,7 +9,7 @@ public class LoginManager : MonoBehaviour
 {
     [SerializeField] private string authenticationEndpoint = "http://127.0.0.1:13756/account";
 
-    [SerializeField] private TMP_InputField emailInputField, passwordInputField;
+    [SerializeField] private TMP_InputField usernameInputField, passwordInputField;
     [SerializeField] private TextMeshProUGUI alertText;
     [SerializeField] private GameObject loginButton;
 
@@ -26,7 +26,7 @@ public class LoginManager : MonoBehaviour
     {
 
 
-        string username = emailInputField.text;
+        string username = usernameInputField.text;
         string password = passwordInputField.text;
 
         if(username.Length < 3 || username.Length > 24)
@@ -65,9 +65,11 @@ public class LoginManager : MonoBehaviour
 
             if (request.downloadHandler.text != "Invalid credentials") //login success?
             {
-                alertText.text = "Welcome";
+
                 loginButton.SetActive(false);
-            }
+                GameAccount returnedAccount = JsonUtility.FromJson<GameAccount>(request.downloadHandler.text);
+                alertText.text ="Welcome " + returnedAccount.username + ((returnedAccount.adminFlag == 1) ? " Admin" : "");
+            } 
             else
             {
                 alertText.text = "Invalid credentials";
