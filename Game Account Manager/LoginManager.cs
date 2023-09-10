@@ -39,14 +39,14 @@ public class LoginManager : MonoBehaviour
         string username = usernameInputField.text;
         string password = passwordInputField.text;
 
-        if(username.Length < 3 || username.Length > 24)
+        if (username.Length < 3 || username.Length > 24)
         {
             alertText.text = "Invalid username";
             ActivateButtons(true);
             yield break;
         }
 
-        if(password.Length < 3 || password.Length > 24)
+        if (password.Length < 3 || password.Length > 24)
         {
             alertText.text = "Invalid password";
             ActivateButtons(true);
@@ -75,97 +75,119 @@ public class LoginManager : MonoBehaviour
 
         if (request.result == UnityWebRequest.Result.Success)
         {
+            LoginResponse response = JsonUtility.FromJson<LoginResponse>(request.downloadHandler.text);
 
-            if (request.downloadHandler.text != "Invalid credentials") //login success?
+            if (response.code == 0) //login success?
             {
 
                 ActivateButtons(false);
-                GameAccount returnedAccount = JsonUtility.FromJson<GameAccount>(request.downloadHandler.text);
-                alertText.text ="Welcome " + returnedAccount.username + ((returnedAccount.adminFlag == 1) ? " Admin" : "");
-            } 
+                alertText.text = "Welcome " + ((response.data.adminFlag == 1) ? " Admin" : "");
+            }
             else
             {
-                alertText.text = "Invalid credentials";
-                ActivateButtons(true);
-            }
+                switch (response.code)
+                {
+                    case 1:
+                        alertText.text = "Invalid credentials";
+                        ActivateButtons(true);
+                        break;
+                    default:
+                        alertText.text = "Corruption detected";
+                        ActivateButtons(false);
+                        break;
+
+                }
 
         }
+
+    }
         else
         {
             alertText.text = "Error connecting to the server";
             ActivateButtons(true);
-        }
+}
 
-        yield return null;
+yield return null;
     }
 
 
     private IEnumerator TryCreate()
+{
+
+
+    string username = usernameInputField.text;
+    string password = passwordInputField.text;
+
+    if (username.Length < 3 || username.Length > 24)
     {
-
-
-        string username = usernameInputField.text;
-        string password = passwordInputField.text;
-
-        if(username.Length < 3 || username.Length > 24)
-        {
-            alertText.text = "Invalid username";
-            ActivateButtons(true);
-            yield break;
-        }
-
-        if(password.Length < 3 || password.Length > 24)
-        {
-            alertText.text = "Invalid password";
-            ActivateButtons(true);
-            yield break;
-        }
-
-        WWWForm form = new WWWForm();
-        form.AddField("rUsername", username);
-        form.AddField("rPassword", password);
-
-        UnityWebRequest request = UnityWebRequest.Post(createEndpoint, form);
-        var handler = request.SendWebRequest();
-
-        float startTime = 0.0f;
-        while (!handler.isDone)
-        {
-            startTime += Time.deltaTime;
-
-            if (startTime > 10.0f)
-            {
-                break;
-            }
-
-            yield return null;
-        }
-
-        if (request.result == UnityWebRequest.Result.Success)
-        {
-
-            if (request.downloadHandler.text != "Invalid credentials" && request.downloadHandler.text != "Account already exists") //login success?
-            {
-                GameAccount returnedAccount = JsonUtility.FromJson<GameAccount>(request.downloadHandler.text);
-                alertText.text ="Account ha been created";
-            } 
-            else
-            {
-                alertText.text = "Account already exists";
-            }
-        }
-        else
-        {
-            alertText.text = "Error connecting to the server";
-
-        }
-
+        alertText.text = "Invalid username";
         ActivateButtons(true);
+        yield break;
+    }
+
+    if (password.Length < 3 || password.Length > 24)
+    {
+        alertText.text = "Invalid password";
+        ActivateButtons(true);
+        yield break;
+    }
+
+    WWWForm form = new WWWForm();
+    form.AddField("rUsername", username);
+    form.AddField("rPassword", password);
+
+    UnityWebRequest request = UnityWebRequest.Post(createEndpoint, form);
+    var handler = request.SendWebRequest();
+
+    float startTime = 0.0f;
+    while (!handler.isDone)
+    {
+        startTime += Time.deltaTime;
+
+        if (startTime > 10.0f)
+        {
+            break;
+        }
+
         yield return null;
     }
 
-    private void ActivateButtons(bool toggle){
-        loginButton.SetActive(toggle);
-        createButton.SetActive(toggle);
+    if (request.result == UnityWebRequest.Result.Success)
+    {
+        CreateResponse response = JsonUtility.FromJson<CreateResponse>(request.downloadHandler.text);
+
+        if (response.code == 0 )
+        {
+            alertText.text = "Account has been created";
+        }
+        else
+        {
+            switch (response.code){
+                case 1:
+                    alertText.text = "Invalid credentials";
+                    break;
+                case 2:
+                    alertText.text = "Account already exists";
+                    break;
+                default:
+                    alertText.text = "Corruption detected";
+                    break;
+            }
+        }
     }
+    else
+    {
+        alertText.text = "Error connecting to the server";
+
+    }
+
+    ActivateButtons(true);
+    yield return null;
+}
+
+private void ActivateButtons(bool toggle)
+{
+    loginButton.SetActive(toggle);
+    createButton.SetActive(toggle);
+}
 }
