@@ -154,6 +154,7 @@ yield return null;
 
     if (request.result == UnityWebRequest.Result.Success)
     {
+        Debug.Log(request.downloadHandler.text);
         CreateResponse response = JsonUtility.FromJson<CreateResponse>(request.downloadHandler.text);
 
         if (response.code == 0 )
