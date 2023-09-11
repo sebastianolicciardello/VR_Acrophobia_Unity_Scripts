@@ -5,10 +5,14 @@ using UnityEngine;
 public class MainMenuManager : MonoBehaviour
 {
     [SerializeField] private GameObject background, progressBar, login;
+    
 
-    // Start is called before the first frame update
     void Start()
     {
+        PlayerPrefs.DeleteAll();
+
+        LoginManager.onLoginSuccess += ShowPlayers;
+
         // Execute after 1 second
         StartCoroutine(WaitAndExecute());
     }
@@ -62,4 +66,12 @@ public class MainMenuManager : MonoBehaviour
             yield return null;
         }
     }
+
+    private void ShowPlayers()
+    {
+        Debug.Log("Players");
+    }
+    
+
+    
 }
