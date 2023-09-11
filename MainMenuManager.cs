@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class MainMenuManager : MonoBehaviour
 {
-    [SerializeField] private GameObject background, progressBar, login;
-    
+    [SerializeField] private GameObject background, progressBar, login, players;
+
 
     void Start()
     {
@@ -24,54 +24,77 @@ public class MainMenuManager : MonoBehaviour
 
         yield return new WaitForSeconds(3);
 
-        // Retrieve the CanvasGroup component from the "background" panel
-        CanvasGroup canvasGroupBackground = background.GetComponent<CanvasGroup>();
+        yield return StartCoroutine(FadeOut(background));
+        progressBar.SetActive(false);
+        background.SetActive(false);
 
-        // Start a fade-out animation for the "background" panel
+        login.SetActive(true);
+        yield return StartCoroutine(FadeIn(login));
+    }
+
+    private void ShowPlayers()
+    {
+
+        StartCoroutine(WaitPlayers());
+
+
+    }
+
+    IEnumerator WaitPlayers()
+    {
+        yield return StartCoroutine(FadeOut(login));
+        login.SetActive(false);
+
+
+        players.SetActive(true);
+        yield return StartCoroutine(FadeIn(players));
+
+
+    }
+
+    private IEnumerator FadeOut(GameObject panel)
+    {
+        // Recover the CanvasGroup component from the panel
+        CanvasGroup canvasGroupPanel = panel.GetComponent<CanvasGroup>();
+
+        // Start a fade-out animation for the panel
         float fadeOutDuration = 1.0f;
         float elapsedTimeFadeOut = 0.0f;
 
         while (elapsedTimeFadeOut < fadeOutDuration)
         {
             float alpha = 1 - (elapsedTimeFadeOut / fadeOutDuration);
-            canvasGroupBackground.alpha = alpha;
+            canvasGroupPanel.alpha = alpha;
 
             elapsedTimeFadeOut += Time.deltaTime;
 
+            // Wait for the next frame
             yield return null;
         }
+    }
 
-        progressBar.SetActive(false);
+    private IEnumerator FadeIn(GameObject panel)
+    {
+        // Recover the CanvasGroup component from the panel
+        CanvasGroup canvasGroupPanel = panel.GetComponent<CanvasGroup>();
 
-        // Disable the "background" panel after the fade-out animation
-        background.SetActive(false);
-
-        // Enable the "login" object
-        login.SetActive(true);
-
-        // Retrieve the CanvasGroup component from the "login" object
-        CanvasGroup canvasGroupLogin = login.GetComponent<CanvasGroup>();
-
-        // Start a fade-in animation for the "login" object
+        // Start a fade-in animation for the panel
         float fadeInDuration = 1.0f;
         float elapsedTimeFadeIn = 0.0f;
 
         while (elapsedTimeFadeIn < fadeInDuration)
         {
             float alpha = elapsedTimeFadeIn / fadeInDuration;
-            canvasGroupLogin.alpha = alpha;
+            canvasGroupPanel.alpha = alpha;
 
             elapsedTimeFadeIn += Time.deltaTime;
 
+            // Wait for the next frame
             yield return null;
         }
+
     }
 
-    private void ShowPlayers()
-    {
-        Debug.Log("Players");
-    }
-    
 
-    
+
 }
