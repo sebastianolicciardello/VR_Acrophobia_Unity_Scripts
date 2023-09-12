@@ -23,9 +23,6 @@ public class LoginManager : MonoBehaviour
     public void OnLoginClick()
     {
 
-        alertText.text = "Signing in...";
-        ActivateButtons(false);
-
         StartCoroutine(TryLogin());
     }
 
