@@ -7,10 +7,8 @@ public static class Extensions
 
     public static IEnumerator FadeOut(GameObject panel)
     {
-        // Recover the CanvasGroup component from the panel
         CanvasGroup canvasGroupPanel = panel.GetComponent<CanvasGroup>();
 
-        // Start a fade-out animation for the panel
         float fadeOutDuration = 1.0f;
         float elapsedTimeFadeOut = 0.0f;
 
@@ -21,17 +19,16 @@ public static class Extensions
 
             elapsedTimeFadeOut += Time.deltaTime;
 
-            // Wait for the next frame
             yield return null;
         }
+
+        canvasGroupPanel.alpha = 0.0f; // Imposta esplicitamente il valore alpha a 0.0f alla fine del tempo
     }
 
     public static IEnumerator FadeIn(GameObject panel)
     {
-        // Recover the CanvasGroup component from the panel
         CanvasGroup canvasGroupPanel = panel.GetComponent<CanvasGroup>();
 
-        // Start a fade-in animation for the panel
         float fadeInDuration = 1.0f;
         float elapsedTimeFadeIn = 0.0f;
 
@@ -42,10 +39,10 @@ public static class Extensions
 
             elapsedTimeFadeIn += Time.deltaTime;
 
-            // Wait for the next frame
             yield return null;
         }
 
+        canvasGroupPanel.alpha = 1.0f; // Imposta esplicitamente il valore alpha a 1.0f alla fine del tempo
     }
 
 }

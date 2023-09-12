@@ -6,6 +6,7 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 using System.Text.RegularExpressions;
 using System.Linq;
+using UnityEngine.EventSystems;
 
 public class PlayersManager : MonoBehaviour
 {
@@ -17,6 +18,9 @@ public class PlayersManager : MonoBehaviour
     private int startIndex = 0;
     private int maxPlayersToShow = 6;
     private int playersCount = 0;
+
+    public delegate void OnPlayerSelected(string id, string fullname);
+    public static event OnPlayerSelected onPlayerSelected;
 
 
     void Start()
@@ -100,10 +104,10 @@ public class PlayersManager : MonoBehaviour
 
                 // Add an onClick listener to the button
                 playerButton.onClick.AddListener(() =>
-                {
-                    // Handle the button click
-                    Debug.Log($"Button clicked for player: {player.fullName}");
-                });
+              {
+                  // Handle the button click
+                  onPlayerSelected?.Invoke(player._id, player.fullName);
+              });
 
 
             }
